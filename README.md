@@ -72,7 +72,7 @@ The trigger outputs and inputs are inverted, since inverting buffers work better
 ###Turning On
 Just plug power into the Raspberry Pi's micro USB jack. The power off switch does not turn the device on, only off, but it is best to switch it to on before powering on the Pi. Make sure the launchpad is connected before you turn it on and any usb midi device if you want to send out midi.
 ###Turning Off
-Flip the power switch to the off position. This saves the midi settings and the presets and then shuts down the Pi. Wait a few seconds before you disconnect the power after doing this. If you just yank the power you will loose your presets and midi settings and might corrupt your micro SD card.
+Flip the power switch to the off position. This saves the midi settings and the presets and then shuts down the Pi. Wait until the lights go off on the launchpad before you disconnect the power to the Pi. If you just yank the power you will loose your presets and midi settings and might corrupt your micro SD card.
 ###Step Editing
 Push a pad to make that step trigger when the sequencer hits it, push the pad again to set it to not be triggered. The pad will light up to show that it will send a trigger.
 ###Track Switching
