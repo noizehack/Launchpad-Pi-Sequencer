@@ -1,0 +1,16 @@
+{
+  "name": "launchpadSeq",
+  "version": "0.0.1",
+  "description": "drum sequencer for raspberry pi with novation launchpad as controller",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Trevor Baker",
+  "license": "ISC",
+  "dependencies": {
+    "easymidi": "0.0.2",
+    "nanotimer": "^0.3.14",
+    "onoff": "^1.0.4"
+  }
+}
