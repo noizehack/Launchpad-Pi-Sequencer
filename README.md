@@ -111,4 +111,4 @@ If you hold the "mixer" button for more than 1 second and then let go you enter 
 
 ##Know issues:
 * if you plug a usb midi device in that draws a lot of power over usb the app might loose communication with the launchpad and will keep running, but you will not be able to edit patterns or interact with it.
-* Trigger pulses vary in width, which can make devices sensitive to this have different sounds on different triggers. Possible fixes are either a code optimization, or a different output buffer that always outputs a trigger with a specific width, no matter how long the input trigger is.
+* ~~Trigger pulses vary in width, which can make devices sensitive to this have different sounds on different triggers. Possible fixes are either a code optimization, or a different output buffer that always outputs a trigger with a specific width, no matter how long the input trigger is.~~ I think I fixed this by changing the triggers to all be turned off with one timer, instead of them each having their own individual timers.
