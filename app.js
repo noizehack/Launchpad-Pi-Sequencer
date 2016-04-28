@@ -342,54 +342,51 @@ function handleCcIn(cc, value) {
 
 function advanceSeq() {
   if (seq.running) {
+    var triggersToSend = [];
+    for (var i = 0; i < 8; i++) {
+      seq.curStep[i] = seq.curStep[i] >= seq.lastStep[i] ? 0 : seq.curStep[i] + 1;
+      if (seq.tracks[i][seq.curStep[i]]) {
+        triggersToSend.push(i);
+      }
+    }
     clockOut.write(0, function(err) {
       if (err) {
         console.log(err);
       }
     });
+    for (var i = 0; i < triggersToSend.length; i++) {
+      triggerGPIO[triggersToSend[i]].write(0, function(err) {
+        if (err) {
+          console.log(err);
+        }
+      });
+    }
     timer.setTimeout(function() {
       clockOut.write(1, function(err) {
         if (err) {
           console.log(err);
         }
       });
-    }, '', '5m');
-    seq.toggle = !seq.toggle;
-    for (var i = 0; i < 8; i++) {
-      seq.curStep[i]++;
-      if (seq.curStep[i] > seq.lastStep[i]) {
-        seq.curStep[i] = 0;
+      for (var i = 0; i < triggersToSend.length; i++) {
+        triggerGPIO[triggersToSend[i]].write(1, function(err) {
+          if (err) {
+            console.log(err);
+          }
+        });
       }
-      if (seq.tracks[i][seq.curStep[i]]) {
-        triggerOut(i);
+    }, '', '5m');
+    for (var i = 0; i < triggersToSend.length; i++) {
+      if (midiOut !== undefined) {
+        midiOut.send('noteon', {
+          note: +midiOutNotes[triggersToSend[i]][1],
+          velocity: 127,
+          channel: midiOutNotes[triggersToSend[i]][0]
+        });
       }
     }
+    seq.toggle = !seq.toggle;
   }
   updateDisplay();
-}
-
-function triggerOut(track) {
-  //analog triggers
-  triggerGPIO[track].write(0, function(err) {
-    if (err) {
-      console.log(err);
-    }
-  });
-  timer.setTimeout(function() {
-    triggerGPIO[track].write(1, function(err) {
-      if (err) {
-        console.log(err);
-      }
-    });
-  }, '', '5m');
-  //midi
-  if (midiOut !== undefined) {
-    midiOut.send('noteon', {
-      note: +midiOutNotes[track][1],
-      velocity: 127,
-      channel: midiOutNotes[track][0]
-    });
-  }
 }
 
 function changePad(pad, color) {//could change to take channel as argument
