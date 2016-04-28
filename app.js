@@ -62,17 +62,17 @@ var seq = {
     ]
 };
 
-//display arrays
-var lastDisplay = [
-  [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-  [-1, -1, -1, -1, -1, -1, -1, -1],
-  [-1, -1, -1, -1, -1, -1, -1, -1]
-];
-var nextDisplay = [
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0]
-];
+//display object
+var lastDisplay = {
+  pads: [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+  tracks: [-1, -1, -1, -1, -1, -1, -1, -1],
+  controls: [-1, -1, -1, -1, -1, -1, -1, -1]
+};
+var nextDisplay = {
+  pads: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  tracks: [0, 0, 0, 0, 0, 0, 0, 0],
+  controls: [0, 0, 0, 0, 0, 0, 0, 0]
+};
 
 //autoconfigure midi inputs and outputs
 var inputs = easymidi.getInputs();
@@ -421,19 +421,19 @@ function updateDisplay() {
         var color;
         var dimColor = dark;
         if (seq.tracksDisplayed === 1) {
-          changeControl(controlPads[2], dark);
-          changeControl(controlPads[3], dark);
+          nextDisplay.controls[2] = dark;
+          nextDisplay.controls[3] = dark;
         } else {
           dimColor = trackColors[track][0];
           if (seq.scrollPage === 0) {
-            changeControl(controlPads[2], dark);
-            changeControl(controlPads[3], trackColors[0][1]);
+            nextDisplay.controls[2] = dark;
+            nextDisplay.controls[3] = trackColors[0][1];
           } else if (seq.scrollPage === seq.tracksDisplayed - 1){
-            changeControl(controlPads[2], trackColors[seq.scrollPage][1]);
-            changeControl(controlPads[3], dark);
+            nextDisplay.controls[2] = trackColors[seq.scrollPage][1];
+            nextDisplay.controls[3] = dark;
           } else {
-            changeControl(controlPads[2], trackColors[seq.scrollPage][1]);
-            changeControl(controlPads[3], trackColors[seq.scrollPage][1]);
+            nextDisplay.controls[2] = trackColors[seq.scrollPage][1];
+            nextDisplay.controls[3] = trackColors[seq.scrollPage][1];
           }
         }
         if (stepNum === seq.curStep[track]) {
@@ -441,20 +441,20 @@ function updateDisplay() {
         } else {
           color = selected ? trackColors[track][1] : dimColor;
         }
-        changePad(pads[i], color);
+        nextDisplay.pads[i] = color;
       }
-      changeControl(controlPads[5], dark);
-      changeControl(controlPads[6], dark);
-      changeControl(controlPads[7], dark);
+      nextDisplay.controls[5] = dark;
+      nextDisplay.controls[6] = dark;
+      nextDisplay.controls[7] = dark;
       break;
     case 'bpm':
       var speed = seq.bpm.split('');
       for (var i = 0; i < 4; i++) {
         digitFader(i, +speed[i]);
       }
-      changeControl(controlPads[5], brightRunner);
-      changeControl(controlPads[6], dark);
-      changeControl(controlPads[7], dark);
+      nextDisplay.controls[5] = brightRunner;
+      nextDisplay.controls[6] = dark;
+      nextDisplay.controls[7] = dark;
       break;
     case 'midi':
       var note = midiOutNotes[seq.displayTrack][1];
@@ -473,34 +473,34 @@ function updateDisplay() {
             if (note[0] === '1') {
               hundredsColor = trackColors[1][1];
             }
-            changePad(pads[59], hundredsColor);
+            nextDisplay.pads[59] = hundredsColor;
           }
-          changePad(pads[arr[j]], color);
+          nextDisplay.pads[arr[j]] = color;
         }
       }
       digitFader(2, +note[1]);
       digitFader(3, +note[2]);
-      changeControl(controlPads[5], brightRunner);
-      changeControl(controlPads[6], dark);
-      changeControl(controlPads[7], dark);
+      nextDisplay.controls[5] = brightRunner;
+      nextDisplay.controls[6] = dark;
+      nextDisplay.controls[7] = dark;
       break;
     case 'presetLoad':
       for (var i = 0; i < 64; i++) {
         var color = loadDisplay[i] ? brightRunner : dark;
-        changePad(pads[i], color);
+        nextDisplay.pads[i] = color;
       }
-      changeControl(controlPads[5], dark);
-      changeControl(controlPads[6], dark);
-      changeControl(controlPads[7], brightRunner);
+      nextDisplay.controls[5] = dark;
+      nextDisplay.controls[6] = dark;
+      nextDisplay.controls[7] = brightRunner;
       break;
     case 'presetSave':
       for (var i = 0; i < 64; i++) {
         var color = saveDisplay[i] ? brightRunner : dark;
-        changePad(pads[i], color);
+        nextDisplay.pads[i] = color;
       }
-      changeControl(controlPads[5], dark);
-      changeControl(controlPads[6], dark);
-      changeControl(controlPads[7], darkRunner);
+      nextDisplay.controls[5] = dark;
+      nextDisplay.controls[6] = dark;
+      nextDisplay.controls[7] = darkRunner;
       break;
     case 'lastStep':
       for (var i = 0; i < 64; i++) {
@@ -510,11 +510,11 @@ function updateDisplay() {
         } else if (i > seq.lastStep[seq.displayTrack]) {
           color = trackColors[seq.displayTrack][0];
         }
-        changePad(pads[i], color);
+        nextDisplay.pads[i] = color;
       }
-      changeControl(controlPads[5], dark);
-      changeControl(controlPads[6], brightRunner);
-      changeControl(controlPads[7], dark);
+      nextDisplay.controls[5] = dark;
+      nextDisplay.controls[6] = brightRunner;
+      nextDisplay.controls[7] = dark;
       break;
   }
   //tracks
@@ -523,13 +523,31 @@ function updateDisplay() {
     if (j === seq.displayTrack) {
       trackColor = trackColors[j][1];
     }
-  changePad(trackPads[j], trackColor);
+  nextDisplay.tracks[j] = trackColor
   }
   //toggle flash
   if (seq.toggle || !seq.running) {
-    changeControl(controlPads[4], brightRunner);
+    nextDisplay.controls[4] = brightRunner;
   } else {
-    changeControl(controlPads[4], dark);
+    nextDisplay.controls[4] = dark;
+  }
+  for (var i = 0; i < nextDisplay.pads.length; i++) {
+    if (lastDisplay.pads[i] !== nextDisplay.pads[i]) {
+      changePad(pads[i], nextDisplay.pads[i]);
+      lastDisplay.pads[i] = nextDisplay.pads[i];
+    }
+  }
+  for (var i = 0; i < nextDisplay.tracks.length; i++) {
+    if (lastDisplay.tracks[i] !== nextDisplay.tracks[i]) {
+      changePad(trackPads[i], nextDisplay.tracks[i]);
+      lastDisplay.tracks[i] = nextDisplay.tracks[i];
+    }
+  }
+  for (var i = 0; i < nextDisplay.controls.length; i++) {
+    if (lastDisplay.controls[i] !== nextDisplay.controls[i]) {
+      changeControl(controlPads[i], nextDisplay.controls[i]);
+      lastDisplay.controls[i] = nextDisplay.controls[i];
+    }
   }
 }
 
@@ -549,7 +567,7 @@ function digitFader(row, num) {
     } else if (i > 9) {
       color = dark;
     }
-    changePad(pads[arr[i]], color);
+    nextDisplay.pads[arr[i]] = color;
   }
 }
 
