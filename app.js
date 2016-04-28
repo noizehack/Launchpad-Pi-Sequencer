@@ -1,8 +1,3 @@
-//todo
-//make clock pulse width 50%?
-//add midiclock out? midi start stop and reset out?
-//if you do then you need to calculate bpm from the analog clock in too
-
 var fs = require('fs');
 var exec = require('child_process').exec;
 var easymidi = require('easymidi');
@@ -67,6 +62,18 @@ var seq = {
     ]
 };
 
+//display arrays
+var lastDisplay = [
+  [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+  [-1, -1, -1, -1, -1, -1, -1, -1],
+  [-1, -1, -1, -1, -1, -1, -1, -1]
+];
+var nextDisplay = [
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0]
+];
+
 //autoconfigure midi inputs and outputs
 var inputs = easymidi.getInputs();
 var outputs = easymidi.getOutputs();
@@ -98,7 +105,7 @@ clockOut.write(1, function(err) {
 });
 
 //initialization
-updateDisplay(seq);
+updateDisplay();
 var fileData = fs.readFileSync(__dirname + '/midiConfig.json', 'utf8');
 midiOutNotes = JSON.parse(fileData);
 fileData = fs.readFileSync(__dirname + '/presets.json', 'utf8');
@@ -111,11 +118,11 @@ resetIn.watch(handleResetIn);
 
 //handle button pushes
 input.on('noteon', function(params) {
-  handleNoteIn(params.note, params.velocity, seq);
+  handleNoteIn(params.note, params.velocity);
 });
 
 input.on('cc', function(params) {
-  handleCcIn(params.controller, params.value, seq);
+  handleCcIn(params.controller, params.value);
 });
 
 //functions
@@ -153,18 +160,18 @@ function makeMidiOutput(outputs) {
   }
 }
 
-function handleNoteIn(note, velocity, seq) {
+function handleNoteIn(note, velocity) {
   if (velocity === 127) {
     if (trackPads.indexOf(note) !== -1) {//track change buttons
       seq.displayTrack = trackPads.indexOf(note);
-      updateDisplay(seq);
+      updateDisplay();
       return;
     }
     if (pads.indexOf(note) !== -1) {//buttons in grid
       switch (seq.mode) {
         case 'step':
           var pad = pads.indexOf(note);
-          var arr = displayArr(seq);
+          var arr = displayArr();
           var trackStep = arr[pad];
           trackStep = trackStep.split('|');
           var track = trackStep[0];
@@ -242,11 +249,11 @@ function handleNoteIn(note, velocity, seq) {
           break;
       }
     }
-  updateDisplay(seq);
+  updateDisplay();
   }
 }
 
-function handleCcIn(cc, value, seq) {
+function handleCcIn(cc, value) {
   if (value === 127) {
     switch (cc) {
       case controlPads[0]://reset
@@ -330,7 +337,7 @@ function handleCcIn(cc, value, seq) {
       seq.presetsHeld = 0;
     }
   }
-  updateDisplay(seq);
+  updateDisplay();
 }
 
 function advanceSeq() {
@@ -358,7 +365,7 @@ function advanceSeq() {
       }
     }
   }
-  updateDisplay(seq);
+  updateDisplay();
 }
 
 function triggerOut(track) {
@@ -401,10 +408,10 @@ function changeControl(pad, color) {
   });
 }
 
-function updateDisplay(seq) {
+function updateDisplay() {
   switch (seq.mode) {
     case 'step':
-      var arr = displayArr(seq);
+      var arr = displayArr();
       for (var i = 0; i < 64; i++) {
         var step = arr[i];
         step = step.split('|');
@@ -546,7 +553,7 @@ function digitFader(row, num) {
   }
 }
 
-function displayArr(seq) {
+function displayArr() {
   var track = seq.displayTrack;
   var page = seq.scrollPage;
   var arr = [];
@@ -660,7 +667,7 @@ function handleResetIn(err, value) {
     console.log(err);
   }
   seq.curStep = [-1, -1, -1, -1, -1, -1, -1, -1];
-  updateDisplay(seq);
+  updateDisplay();
 }
 
 function shutdown() {
