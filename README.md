@@ -18,7 +18,7 @@ It is designed to run on a Raspberry Pi with node.js and uses a Novation Launchp
 
 ##hardware:
 * Raspberry Pi 3
-* Pi "Hat" with 9 inverting output buffers powered by 5v, 2 inverting input buffers powered by 3.3v and 2 switches with pull up resistors to 3.3v (I do not yet have schematics, but I will make some and add them to the repository soon, in the meantime you can use the buffer designs from the Sonic Potions LXR trigger IO board http://sonic-potions.com/public/Trigger_IO_schematic.pdf)
+* Pi "Hat" with 9 inverting output buffers powered by 5v, 2 inverting input buffers powered by 3.3v and 2 switches with pull up resistors to 3.3v, there is a schematic PDF in the repository
 * Novation Launchpad Mark 2
 * A USB to midi converter if you want to use midi, or a drum machine with USB midi in
 
@@ -111,4 +111,3 @@ If you hold the "mixer" button for more than 1 second and then let go you enter 
 
 ##Know issues:
 * if you plug a usb midi device in that draws a lot of power over usb the app might loose communication with the launchpad and will keep running, but you will not be able to edit patterns or interact with it.
-* ~~Trigger pulses vary in width, which can make devices sensitive to this have different sounds on different triggers. Possible fixes are either a code optimization, or a different output buffer that always outputs a trigger with a specific width, no matter how long the input trigger is.~~ I think I fixed this by changing the triggers to all be turned off with one timer, instead of them each having their own individual timers.
